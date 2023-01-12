@@ -1,0 +1,78 @@
+/* 顶部 */
+view#header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  padding: 10rpx 25rpx;
+  background-color: white;
+}
+
+/* 搜索框 */
+view#search {
+  display: flex;
+  flex-grow: 1;
+  border-bottom: 1rpx solid grey;
+  margin: auto 25rpx auto 0;
+}
+
+input#search-input {
+  flex-grow: 1;
+  margin: 0 10rpx 0 0;
+}
+
+/* 清除输入 */
+view#search-clear {
+  width: 40rpx;
+  height: 40rpx;
+  margin: auto 0;
+}
+
+/* 添加按钮 */
+view#add {
+  width: 50rpx;
+  height: 50rpx;
+  margin: auto 0 auto auto;
+}
+
+image.icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* 列表 */
+view#tip {
+  color: grey;
+  position: fixed;
+  left: 50%;
+  top: 45%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+view.loc {
+  display: flex;
+  height: 100rpx;
+  padding: 0 25rpx;
+}
+
+text.loc-name {
+  width: 625rpx;
+  margin: auto 0;
+}
+
+view.loc-del {
+  width: 50rpx;
+  height: 50rpx;
+  margin: auto 0 auto auto;
+}
+
+/* 底部 */
+view#footer {
+  display: flex;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10rpx 25rpx;
+  background-color: white;
+}

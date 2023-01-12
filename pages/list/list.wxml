@@ -1,0 +1,33 @@
+<!-- 顶部 -->
+<view id="header">
+  <!-- 搜索框 -->
+  <view id="search">
+    <input id="search-input" type="text" placeholder="搜索已添加的地点" bindinput="search" value="{{keyWord}}" />
+    <!-- 清除输入 -->
+    <view id="search-clear" wx:if="{{keyWord}}" catchtap="clearInput">
+      <image class="icon" src="/images/md-cancel@3x.png"></image>
+    </view>
+  </view>
+  <!-- 添加按钮 -->
+  <view id="add" catchtap="addLoc">
+    <image class="icon" src="/images/mb-plus-o@3x.png"></image>
+  </view>
+</view>
+
+<!-- 列表 -->
+<view id="tip" wx:if="{{!locList.length}}">点击右上角+号向清单中添加地点</view>
+<view id="contain">
+  <view class="loc" wx:for="{{locList}}" wx:key="index">
+    <text class="loc-name">{{item.name}}</text>
+    <view class="loc-del" catchtap="delLoc" data-index="{{index}}">
+      <image class="icon" src="/images/if-minus-circle@3x.png"></image>
+    </view>
+  </view>
+  <view class="loc"></view>
+</view>
+
+<!-- 底部 -->
+<view id="footer">
+  <button type="warn" catchtap="clearList" style="width: 325rpx;">清空</button>
+  <button type="primary" catchtap="toMap" style="width: 325rpx;">确定</button>
+</view>

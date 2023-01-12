@@ -1,0 +1,6 @@
+/* 地图 */
+map#map {
+  position: fixed;
+  width: 750rpx;
+  height: 100vh;
+}
