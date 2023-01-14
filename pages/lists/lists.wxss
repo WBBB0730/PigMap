@@ -1,0 +1,46 @@
+view#add {
+  display: flex;
+  padding: 10rpx 25rpx;
+}
+
+view#add-icon-box {
+  display: flex;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  border: 1rpx dashed #9b9b9b;
+  margin: auto 25rpx auto auto;
+}
+
+image#add-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin: auto;
+}
+
+text#add-text {
+  margin: auto auto auto 0;
+}
+
+view.list {
+  display: flex;
+  height: 120rpx;
+  padding: 0 25rpx;
+  white-space: nowrap;
+}
+
+text.list-name {
+  margin: auto 0;
+}
+
+/* 删除按钮 */
+view.list-del {
+  width: 50rpx;
+  height: 50rpx;
+  margin: auto 0 auto auto;
+}
+
+image.icon {
+  width: 100%;
+  height: 100%;
+}

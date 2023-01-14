@@ -1,0 +1,17 @@
+<view id="add" catchtap="addList">
+  <view id="add-icon-box">
+    <image id="add-icon" src="/images/ze-plus@3x.png"></image>
+  </view>
+  <text id="add-text">新建清单</text>
+</view>
+<!-- 清单列表 -->
+<view id="lists">
+  <!-- 清单 -->
+  <view class="list" wx:for="{{lists}}" wx:key="index" catchtap="editList" data-index="{{index}}">
+    <text class="list-name">{{item.name}}</text>
+    <!-- 删除按钮 -->
+    <view class="list-del" wx:if="{{index != 0}}" catchtap="delList" data-index="{{index}}">
+      <image class="icon" src="/images/if-minus-circle@3x.png"></image>
+    </view>
+  </view>
+</view>

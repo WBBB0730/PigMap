@@ -1,0 +1,22 @@
+<!-- 顶部 -->
+<view id="header">
+  <text id="title">{{locList.name}} [用户分享]</text>
+</view>
+
+<!-- 清单内容 -->
+<view id="contain">
+  <view class="loc" wx:for="{{locList.locs}}" wx:key="index">
+    <text class="loc-name">{{item.name}}</text>
+  </view>
+  <view class="loc"></view>
+</view>
+<view id="tip" wx:if="{{!locList.locs.length}}">清单空空如也~</view>
+
+<!-- 底部 -->
+<view id="footer">
+  <button type="default" catchtap="saveList" style="width: 325rpx;" disabled="{{saved}}">{{saved ? "已保存" : "保存"}}</button>
+  <button type="primary" catchtap="toMap" style="width: 325rpx;">确定</button>
+</view>
+
+<!-- 遮罩 -->
+<view id="mask" wx:if="{{isMenuOpen}}" catchtap="openOrCloseMenu" data-flag="{{false}}"></view>

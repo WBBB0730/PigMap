@@ -1,0 +1,45 @@
+/* 顶部 */
+view#header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  padding: 10rpx 25rpx;
+  background-color: white;
+  z-index: 101;
+}
+
+text#title {
+  font-weight: bold;
+}
+
+/* 列表 */
+view#tip {
+  color: grey;
+  position: fixed;
+  left: 50%;
+  top: 45%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+view.loc {
+  display: flex;
+  height: 100rpx;
+  padding: 0 25rpx;
+}
+
+text.loc-name {
+  width: 625rpx;
+  margin: auto 0;
+}
+
+/* 底部 */
+view#footer {
+  display: flex;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10rpx 25rpx;
+  background-color: white;
+}
