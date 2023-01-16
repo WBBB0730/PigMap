@@ -25,7 +25,7 @@ Page({
     });
     let res = await app.download("share", _this.data.id);
     _this.setData({
-      data: res.data
+      data: res.data.data[0]
     });
     app.globalData.shareList = res.data;
     let tempLocs = _this.data.data.locs.slice();

@@ -1,10 +1,6 @@
 // app.js
 App({
   onLaunch() {
-    // 初始化云服务
-    wx.cloud.init({
-      env: "pigmap-1gamomqedaab0a10"
-    });
     let _this = this;
     let locLists = wx.getStorageSync('locLists');
     if (locLists) {
@@ -26,13 +22,17 @@ App({
    */
   upload(collection, data) {
     return new Promise((resolve) => {
-      let db = wx.cloud.database();
-      db.collection(collection).add({
-        data: data,
-        success: (res) => {
+      wx.request({
+        url: 'https://fc-mp-d82a7f5f-1cbf-450c-96dd-121cdf0d7dc7.next.bspapp.com/upload',
+        method: "POST",
+        data: {
+          collection: collection,
+          data: data
+        },
+        success(res) {
           resolve(res);
         }
-      });
+      })
     });
   },
 
@@ -41,12 +41,16 @@ App({
    */
   download(collection, id) {
     return new Promise((resolve) => {
-      let db = wx.cloud.database();
-      db.collection(collection).doc(id).get({
-        success: (res) => {
+      wx.request({
+        url: 'https://fc-mp-d82a7f5f-1cbf-450c-96dd-121cdf0d7dc7.next.bspapp.com/download',
+        data: {
+          collection: collection,
+          id: id
+        },
+        success(res) {
           resolve(res);
         }
-      });
+      })
     });
   }
 })

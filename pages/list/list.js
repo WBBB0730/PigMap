@@ -84,7 +84,7 @@ Page({
       return {
         title: "[分享清单]" + _this.data.locList.name,
         imageUrl: "/images/icon.png",
-        path: "/pages/share/share?id=" + res._id
+        path: "/pages/share/share?id=" + res.data.id
       };
     } else {
       // 分享小程序
@@ -279,9 +279,9 @@ Page({
     })
   },
 
-  test() {
-    wx.navigateTo({
-      url: '/pages/share/share?id=17d0551d63c27b6b001177711b15302c',
-    })
-  }
+  // test() {
+  //   wx.navigateTo({
+  //     url: '/pages/share/share?id=ff3a195863c3c96f0022c58062b24853',
+  //   })
+  // }
 })
