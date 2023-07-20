@@ -1,2 +1,0 @@
-<map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" bindcallouttap="copyName" show-scale="true" scale="13">
-</map>
