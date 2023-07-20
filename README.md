@@ -3,4 +3,4 @@
 
 ps. 此项目是使用uni-app开发的微信小程序，使用uniCloud云函数和云数据库存储账号数据
 
-![小程序码](https://github.com/WBBB0730/PigMap/blob/main/static/qrcode.png)
+![小程序码](https://github.com/WBBB0730/PigMap/blob/main/static/qrcode.jpg)
