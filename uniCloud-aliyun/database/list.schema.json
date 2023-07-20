@@ -1,0 +1,47 @@
+{
+	"bsonType": "object",
+	"required": ["openId", "name"],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": false
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"openId": {
+			"description": "所属用户的openId",
+			"bsonType": "string"
+		},
+		"name": {
+			"description": "清单名称",
+			"bsonType": "string"
+		},
+		"list": {
+			"description": "地点列表",
+			"bsonType": "array",
+			"arrayType": "object",
+			"validateFunction": "listValidation",
+			"defaultValue": []
+		},
+		"total": {
+			"description": "地点数量",
+			"bsonType": "int",
+			"defaultValue": 0,
+			"minimum": 0
+		},
+		"createTime": {
+			"description": "创建时间",
+			"defaultValue": {
+				"$env": "now"
+			}
+		},
+		"isDel": {
+			"description": "是否删除",
+			"bsonType": "bool",
+			"defaultValue": false
+		}
+	}
+}

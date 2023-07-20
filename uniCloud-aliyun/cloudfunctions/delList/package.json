@@ -1,0 +1,7 @@
+{
+  "name": "delList",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

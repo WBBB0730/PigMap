@@ -1,0 +1,7 @@
+{
+  "name": "delLocs",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

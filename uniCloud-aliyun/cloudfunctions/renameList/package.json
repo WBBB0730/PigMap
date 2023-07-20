@@ -1,0 +1,7 @@
+{
+  "name": "renameList",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

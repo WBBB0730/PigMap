@@ -1,0 +1,7 @@
+{
+  "name": "saveList",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

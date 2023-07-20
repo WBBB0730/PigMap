@@ -1,0 +1,40 @@
+{
+	"pages": [{
+		"path": "pages/lists/lists",
+		"style": {
+			"navigationBarTitleText": "猪猪地图",
+			"enablePullDownRefresh": false
+		}
+
+	}, {
+		"path": "pages/list/list",
+		"style": {
+			"navigationBarTitleText": "猪猪地图",
+			"enablePullDownRefresh": false
+		}
+
+	}, {
+		"path": "pages/map/map",
+		"style": {
+			"navigationBarTitleText": "猪猪地图",
+			"enablePullDownRefresh": false
+		}
+
+	}, {
+		"path": "pages/share/share",
+		"style": {
+			"navigationBarTitleText": "猪猪地图",
+			"enablePullDownRefresh": false
+		}
+
+	}],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "猪猪地图",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8",
+		"app-plus": {
+			"background": "#efeff4"
+		}
+	}
+}
