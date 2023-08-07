@@ -1,5 +1,6 @@
 <template>
 	<view>
+		<view v-if="lists.length === 0" class="empty">点击右下角 + 号创建清单</view>
 		<view class="lists">
 			<view v-for="(item, index) in lists" :key="index" class="list" hover-class="hover" hover-start-time="0" hover-stay-time="0" @tap="handleTapList(index)" @longpress="editing = true">
 				<view class="left">
@@ -35,7 +36,10 @@
 			this.windowWidth = windowWidth
 			this.windowHeight = windowHeight
 		},
-		onShow() {
+		async onShow() {
+			const app = getApp()
+			if (!app.globalData.openId)
+				await app.login()
 			this.updateLists()
 		},
 		onShareAppMessage() {
@@ -239,6 +243,16 @@
 	
 	.buttons {
 		display: flex;
+	}
+	
+	.empty {
+		display: flex;
+		box-sizing: border-box;
+		height: 100vh;
+		padding-bottom: 20vh;
+		justify-content: center;
+		align-items: center;
+		color: $uni-secondary-color;
 	}
 	
 	.list {

@@ -31,6 +31,8 @@
 			</view>
 		</view>
 		
+		<view class="block" />
+		
 		<view class="footer">
 			<block v-if="!editing">
 				<button class="default" open-type="share">分享</button>
@@ -293,6 +295,10 @@
 		background-color: $uni-border-2;
 	}
 	
+	.block {
+		height: 104rpx;
+	}
+	
 	.footer {
 		position: fixed;
 		left: 0;
@@ -301,6 +307,7 @@
 		display: flex;
 		justify-content: space-between;
 		padding: 12rpx 24rpx;
+		background-color: #ffffff;
 		button {
 			width: 325rpx;
 			height: 80rpx;

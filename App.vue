@@ -1,12 +1,6 @@
 <script>
 	export default {
 		onLaunch() {
-			// TEST
-			
-			this.globalData.openId = uni.getStorageSync('openId') || ''
-			if (!this.globalData.openId) {
-				this.login()
-			}
 		},
 		globalData: {
 			openId: ''
@@ -19,29 +13,28 @@
 			}
 		},
 		methods: {
-			/**
-			 * 登录
-			 */
+			/** 登录 */
 			login() {
-				uni.showLoading()
-				uni.login({
-					provider: 'weixin',
-					success: (res) => {
-						if (res.code) {
+				return new Promise((resolve) => {
+					uni.showLoading()
+					uni.login({
+						provider: 'weixin',
+						success: ({ code }) => {
+							if (!code)
+								return
 							uniCloud.callFunction({
 								name: 'login',
-								data: {
-									code: res.code
-								}
+								data: { code }
 							}).then((res) => {
 								this.globalData.openId = res.result.openId
-								uni.setStorageSync('openId', res.result.openId)
 								uni.hideLoading()
+								resolve()
 							})
 						}
-					}
+					})
 				})
 			},
+			
 			/**
 			 * 获取弹窗输入
 			 */
