@@ -10,7 +10,6 @@
 			</view>
 		</view>
 		
-		<!-- <button @tap="addLoc">添加地点</button> -->
 		<view class="add" @tap="addLoc()">
 			<uni-icons type="plusempty" size="44rpx" color="#6a6a6a" />
 			<text class="text">添加地点</text>
@@ -47,6 +46,7 @@
 </template>
 
 <script>
+	const app = getApp()
 	export default {
 		data() {
 			return {
@@ -60,13 +60,7 @@
 		},
 		computed: {
 			selectNum() {
-				let cnt = 0
-				for (const item of this.select) {
-					if (item) {
-						cnt++
-					}
-				}
-				return cnt
+				return this.select.filter(item => item).length
 			}
 		},
 		onLoad(options) {
@@ -81,10 +75,11 @@
 			}
 		},
 		methods: {
+			/** 更新清单 */
 			async updateList() {
-				if (!this.listId) {
+				if (!this.listId)
 					return
-				}
+					
 				uni.showLoading()
 				const res = (await uniCloud.callFunction({
 					name: 'getList',
@@ -106,24 +101,22 @@
 				this.editing = false
 				uni.hideLoading()
 			},
+			
+			/** 添加地点 */
 			async addLoc() {
-				const app = getApp()
+				const listId = this.listId
 				const openId = app.globalData.openId
-				if (!openId) {
+				if (!listId || !openId)
 					return
-				}
+					
 				const loc = await this.chooseLocation()
-				if (!loc) {
+				if (!loc)
 					return
-				}
+					
 				uni.showLoading()
 				const res = (await uniCloud.callFunction({
 					name: 'addLoc',
-					data: {
-						listId: this.listId,
-						openId,
-						loc
-					}
+					data: { listId, openId, loc }
 				})).result
 				if (res.errCode) {
 					uni.showToast({
@@ -134,20 +127,18 @@
 				}
 				this.updateList()
 			},
+			
+			/** 删除地点 */
 			async delLocs(locs) {
-				const app = getApp()
+				const listId = this.listId
 				const openId = app.globalData.openId
-				if (!this.editing || !openId || locs.length === 0) {
+				if (!listId || !openId)
 					return
-				}
+					
 				uni.showLoading()
 				const res = (await uniCloud.callFunction({
 					name: 'delLocs',
-					data: {
-						openId,
-						listId: this.listId,
-						locs
-					}
+					data: { listId, openId, locs }
 				})).result
 				if (res.errCode) {
 					uni.showToast({
@@ -158,57 +149,47 @@
 				}
 				this.updateList()
 			},
+			
+			/** 选择地点 */
 			async chooseLocation() {
-				return new Promise((resolve, reject) => {
-					uni.chooseLocation({
-						success: (res) => {
-							resolve(res)
-						},
-						fail: () => {
-							resolve(null)
-						}
-					})
-				})
+				return uni.chooseLocation().then((res) => res, () => null)
 			},
+			
 			handleTapLoc(index) {
-				if (this.editing) {
+				if (this.editing)
 					this.select[index] = !this.select[index]
-				} else {
-					uni.setClipboardData({
-						data: this.list[index].name
-					})
-				}
+				else
+					uni.setClipboardData({ data: this.list[index].name })
 			},
+			
 			handleLongPressLoc(index) {
-				if (!this.editing) {
-					this.editing = true
-					this.select = new Array(this.list.length).fill(false)
-					this.select[index] = true
-				}
+				if (this.editing)
+					return
+				this.editing = true
+				this.select = new Array(this.list.length).fill(false)
+				this.select[index] = true
 			},
+			
 			handleTapDel() {
 				uni.showModal({
 					title: '提示',
 					content: '确定删除选中的地点吗？',
 					confirmText: '删除',
 					confirmColor: '#e43d33',
-					success: (res) => {
-						if (res.confirm) {
-							const locs = []
-							for (let i = 0; i < this.list.length; i++) {
-								if (this.select[i]) {
-									locs.push(this.list[i])
-								}
-							}
-							this.delLocs(locs)
-						}
-					}
+				}).then(({ confirm }) => {
+					if (!confirm)
+						return
+					const locs = []
+					this.list.forEach((loc, index) => {
+						if (this.select[index])
+							locs.push(loc)
+					})
+					this.delLocs(locs)
 				})
 			},
+			
 			toMap() {
-				uni.navigateTo({
-					url: '/pages/map/map?listId=' + this.listId
-				})
+				uni.navigateTo({ url: '/pages/map/map?listId=' + this.listId })
 			}
 		}
 	}

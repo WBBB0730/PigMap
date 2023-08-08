@@ -38,24 +38,22 @@
 		},
 		computed: {
 			markers() {
-				return this.list.map((loc, index) => {
-					return {
-						id: index,
-						longitude: loc.longitude,
-						latitude: loc.latitude,
-						width: 0,
-						height: 0,
-						callout: {
-							display: 'ALWAYS',
-							content: loc.name,
-							bgColor: '#ffffff',
-							borderRadius: '8rpx',
-							padding: '24rpx',
-							borderWidth: '1rpx',
-							borderColor: '#909399'
-						}
+				return this.list.map((loc, index) => ({
+					id: index,
+					longitude: loc.longitude,
+					latitude: loc.latitude,
+					width: 0,
+					height: 0,
+					callout: {
+						display: 'ALWAYS',
+						content: loc.name,
+						bgColor: '#ffffff',
+						borderRadius: '8rpx',
+						padding: '24rpx',
+						borderWidth: '1rpx',
+						borderColor: '#909399'
 					}
-				})
+				}))
 			}
 		},
 		onLoad(options) {
@@ -71,15 +69,13 @@
 		},
 		methods: {
 			async updateList() {
-				if (!this.listId) {
+				if (!this.listId)
 					return
-				}
+					
 				uni.showLoading()
 				const res = (await uniCloud.callFunction({
 					name: 'getList',
-					data: {
-						listId: this.listId
-					}
+					data: { listId: this.listId }
 				})).result
 				if (res.errCode) {
 					uni.showToast({
@@ -95,11 +91,13 @@
 				this.ready = true
 				uni.hideLoading()
 			},
+			
 			handleTapName() {
 				uni.setClipboardData({
 					data: this.list[this.locIndex].name
 				})
 			},
+			
 			focus(index) {
 				this.longitude = 113.936696
 				this.latitude = 22.532742
@@ -110,19 +108,23 @@
 					this.scale = 16
 				})
 			},
+			
 			zoomOut() {
 				this.include = []
 				this.$nextTick(() => {
 					this.include = [...this.list]
 				})
 			},
+			
 			preview(index) {
 				this.locIndex = index
 			},
+			
 			navigate(index) {
 				const { name, address, longitude, latitude } = this.list[index]
 				uni.openLocation({ name, address, longitude, latitude })
 			},
+			
 			closePreview() {
 				this.locIndex = null
 			}

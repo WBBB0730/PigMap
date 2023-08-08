@@ -3,15 +3,9 @@
 		<view class="title">
 			<text class=list-name>{{ name }}</text>
 			<text space="nbsp"> [来自用户分享]</text>
-			<!-- <uni-search-bar radius="32rpx" placeholder="在清单中搜索" cancel-button="none" focus /> -->
-			
 		</view>
 		
-		<view v-for="(item, index) in list" :key="index" class="loc" @focus="($event) => { console.log($event) }" hover-class="hover" hover-stay-time="0" @longpress="handleLongPressLoc(index)" @tap="handleTapLoc(index)">
-			<view v-if="editing" class="left">
-				<uni-icons v-if="select[index]" type="checkbox-filled" color="#05c160" size="48rpx" />
-				<uni-icons v-else type="circle" color="#dcdcdc" size="48rpx" />
-			</view>
+		<view v-for="(item, index) in list" :key="index" class="loc" @focus="($event) => { console.log($event) }" hover-class="hover" hover-stay-time="0" @tap="handleTapLoc(index)">
 			<view class="middle">
 				<text>{{ item.name }}</text>
 			</view>
@@ -22,6 +16,8 @@
 			</view>
 		</view>
 		
+		<view class="block" />
+		
 		<view class="footer">
 			<button class="default" @tap="saveList()">保存</button>
 			<button class="primary" @tap="toMap()">确定</button>
@@ -30,26 +26,14 @@
 </template>
 
 <script>
+	const app = getApp()
 	export default {
 		data() {
 			return {
-				editing: false,
 				listId: null,
 				name: '',
 				keyword: '',
-				list: [],
-				select: []
-			}
-		},
-		computed: {
-			selectNum() {
-				let cnt = 0
-				for (const item of this.select) {
-					if (item) {
-						cnt++
-					}
-				}
-				return cnt
+				list: []
 			}
 		},
 		onLoad(options) {
@@ -64,10 +48,11 @@
 			}
 		},
 		methods: {
+			/** 更新清单 */
 			async updateList() {
-				if (!this.listId) {
+				if (!this.listId)
 					return
-				}
+					
 				uni.showLoading()
 				const res = (await uniCloud.callFunction({
 					name: 'getList',
@@ -86,46 +71,37 @@
 				const { name, list } = res.listInfo
 				this.name = name
 				this.list = list
-				this.editing = false
 				uni.hideLoading()
 			},
 			
+			/** 保存清单 */
 			async saveList() {
-				const app = getApp()
+				if (!app.globalData.openId)
+					await app.login()
+				const listId = this.listId
 				const openId = app.globalData.openId
-				if (!openId || !this.listId) {
-					return
-				}
+				
 				let name = this.name
 				name = await app.getInput({
 					title: '保存清单',
 					content: name,
 					placeholderText: '请输入清单名称'
 				})
-				while (name !== null && !(name && name.length <= 10)) {
-					let err = ''
-					if (!name) {
-						err = '清单名称不能为空'
-					} else if (name.length > 10) {
-						err = '清单名称不能超过10个字符'
-					}
+				while (name !== null && (!name || name.length > 10)) {
+					let err = name ? '清单名称不能超过10个字符' : '清单名称不能为空'
 					name = await app.getInput({
 						title: '保存清单',
 						content: name,
 						placeholderText: '请输入清单名称'
 					}, err)
-				} 
-				if (name === null) {
-					return
 				}
+				if (name === null)
+					return
+					
 				uni.showLoading()
 				let res = (await uniCloud.callFunction({
 					name: 'saveList',
-					data: {
-						openId,
-						name,
-						listId: this.listId,
-					}
+					data: { listId, openId, name }
 				})).result
 				if (res.errCode) {
 					uni.showToast({
@@ -138,15 +114,15 @@
 					icon: 'success',
 					title: '保存成功'
 				})
-				uni.navigateTo({
-					url: '/pages/list/list?listId=' + res.listId
-				})
+				uni.navigateTo({ url: '/pages/list/list?listId=' + res.listId })
+			},
+			
+			handleTapLoc(index) {
+				uni.setClipboardData({ data: this.list[index].name })
 			},
 			
 			toMap() {
-				uni.navigateTo({
-					url: '/pages/map/map?listId=' + this.listId
-				})
+				uni.navigateTo({ url: '/pages/map/map?listId=' + this.listId })
 			}
 		}
 	}
@@ -211,6 +187,10 @@
 		background-color: $uni-border-2;
 	}
 	
+	.block {
+		height: 104rpx;
+	}
+	
 	.footer {
 		position: fixed;
 		left: 0;
@@ -219,6 +199,7 @@
 		display: flex;
 		justify-content: space-between;
 		padding: 12rpx 24rpx;
+		background-color: #ffffff;
 		button {
 			width: 325rpx;
 			height: 80rpx;

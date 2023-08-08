@@ -22,6 +22,7 @@
 </template>
 
 <script>
+	const app = getApp()
 	export default {
 		data() {
 			return {
@@ -37,7 +38,6 @@
 			this.windowHeight = windowHeight
 		},
 		async onShow() {
-			const app = getApp()
 			if (!app.globalData.openId)
 				await app.login()
 			this.updateLists()
@@ -53,23 +53,18 @@
 			toPx(rpx) {
 				return rpx / 750 * this.windowWidth
 			},
-			/**
-			 * 更新清单列表
-			 */
+			
+			/** 更新清单列表 */
 			async updateLists() {
-				const app = getApp()
 				const openId = app.globalData.openId
-				if (!openId) {
+				if (!openId)
 					return
-				}
+					
 				uni.showLoading()
 				const res = (await uniCloud.callFunction({
 					name: 'getLists',
-					data: {
-						openId
-					}
+					data: { openId }
 				})).result
-				console.log(res)
 				if (res.errCode) {
 					uni.showToast({
 						icon: 'error',
@@ -81,43 +76,32 @@
 				uni.hideLoading()
 			},
 			
-			/**
-			 * 新建清单
-			 */
+			/** 新建清单 */
 			async addList() {
-				const app = getApp()
 				const openId = app.globalData.openId
-				if (!openId) {
+				if (!openId)
 					return
-				}
-				let name;
-				for (let i = 1; ; i++) {
+					
+				let name = '我的清单1'
+				const names = this.lists.map(item => item.name)
+				for (let i = 2; names.includes(name); i++)
 					name = '我的清单' + i
-					if (!this.lists.map(item => item.name).includes(name)) {
-						break
-					}
-				}
 				name = await app.getInput({
 					title: '新建清单',
 					content: name,
 					placeholderText: '请输入清单名称'
 				})
-				while (name !== null && !(name && name.length <= 10)) {
-					let err = ''
-					if (!name) {
-						err = '清单名称不能为空'
-					} else if (name.length > 10) {
-						err = '清单名称不能超过10个字符'
-					}
+				while (name !== null && (!name || name.length > 10)) {
+					let err = name ? '清单名称不能超过10个字符' : '清单名称不能为空'
 					name = await app.getInput({
 						title: '新建清单',
 						content: name,
 						placeholderText: '请输入清单名称'
 					}, err)
 				} 
-				if (name === null) {
+				if (name === null)
 					return
-				}
+				
 				uni.showLoading()
 				let res = (await uniCloud.callFunction({
 					name: 'addList',
@@ -133,15 +117,12 @@
 				this.updateLists()
 			},
 			
-			/**
-			 * 删除清单
-			 */
+			/** 删除清单 */
 			async delList(index) {
-				const app = getApp()
 				const openId = app.globalData.openId
-				if (!openId) {
+				if (!openId)
 					return
-				}
+					
 				const listId = this.lists[index]._id
 				uni.showLoading()
 				let res = (await uniCloud.callFunction({
@@ -158,15 +139,12 @@
 				this.updateLists()
 			},
 			
-			/**
-			 * 修改清单名称
-			 */
+			/** 修改清单名称 */
 			async renameList(index) {
-				const app = getApp()
 				const openId = app.globalData.openId
-				if (!openId) {
+				if (!openId)
 					return
-				}
+				
 				const listId = this.lists[index]._id
 				let name = this.lists[index].name;
 				name = await app.getInput({
@@ -174,22 +152,17 @@
 					content: name,
 					placeholderText: '请输入清单名称'
 				})
-				while (name !== null && !(name && name.length <= 10)) {
-					let err = ''
-					if (!name) {
-						err = '清单名称不能为空'
-					} else if (name.length > 10) {
-						err = '清单名称不能超过10个字符'
-					}
+				while (name !== null && (!name || name.length > 10)) {
+					let err = name ? '清单名称不能超过10个字符' : '清单名称不能为空'
 					name = await app.getInput({
 						title: '修改清单名称',
 						content: name,
 						placeholderText: '请输入清单名称'
 					}, err)
-				} 
-				if (name === null) {
-					return
 				}
+				if (name === null)
+					return
+				
 				uni.showLoading()
 				let res = (await uniCloud.callFunction({
 					name: 'renameList',
@@ -206,31 +179,27 @@
 			},
 			
 			handleTapList(index) {
-				if (this.editing) {
+				if (this.editing)
 					this.renameList(index)
-				} else {
-					uni.navigateTo({
-						url: '/pages/list/list?listId=' + this.lists[index]._id
-					})
-				}
+				else
+					uni.navigateTo({ url: '/pages/list/list?listId=' + this.lists[index]._id })
 			},
+			
 			handleTapDel(index) {
 				uni.showModal({
 					title: '提示',
 					content: '确定要删除该清单吗',
-					success: (res) => {
-						if (res.confirm) {
+				}).then(({ confirm }) => {
+					if (confirm)
 							this.delList(index)
-						}
-					}
 				})
 			},
+			
 			handleTapButton() {
-				if (this.editing) {
+				if (this.editing)
 					this.editing = false
-				} else {
+				else
 					this.addList()
-				}
 			},
 		}
 	}

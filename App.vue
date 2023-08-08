@@ -1,7 +1,6 @@
 <script>
 	export default {
-		onLaunch() {
-		},
+		onLaunch() {},
 		globalData: {
 			openId: ''
 		},
@@ -15,65 +14,42 @@
 		methods: {
 			/** 登录 */
 			login() {
-				return new Promise((resolve) => {
-					uni.showLoading()
-					uni.login({
-						provider: 'weixin',
-						success: ({ code }) => {
-							if (!code)
-								return
-							uniCloud.callFunction({
-								name: 'login',
-								data: { code }
-							}).then((res) => {
-								this.globalData.openId = res.result.openId
-								uni.hideLoading()
-								resolve()
-							})
-						}
+				uni.showLoading()
+				return uni.login({ provider: 'weixin' }).then(({ code }) => {
+					if (!code)
+						return Promise.reject()
+					return uniCloud.callFunction({
+						name: 'login',
+						data: { code }
+					})
+				}).then((res) => {
+					this.globalData.openId = res.result.openId
+					uni.hideLoading()
+				}).catch(() => {
+					uni.showToast({
+						icon: 'error',
+						title: '登录失败'
 					})
 				})
 			},
-			
-			/**
-			 * 获取弹窗输入
-			 */
+
+			/** 获取弹窗输入 */
 			getInput(options, err) {
-				return new Promise((resolve, reject) => {
-					if (err) {
-						uni.showModal({
-							title: '提示',
-							content: err,
-							showCancel: false,
-							complete: () => {
-								uni.showModal({
-									editable: true,
-									...options,
-									success: (res) => {
-										if (res.confirm) {
-											resolve(res.content.replaceAll('\n', ' '))
-										} else {
-											resolve(null)
-										}
-									}
-								})
-							}
-						})
-					} else {
-						uni.showModal({
-							editable: true,
-							...options,
-							success: (res) => {
-								if (res.confirm) {
-									resolve(res.content.replaceAll('\n', ' '))
-								} else {
-									resolve(null)
-								}
-							}
-						})
-					}
-				})
-			}
+				if (err)
+					return uni.showModal({
+						title: '提示',
+						content: err,
+						showCancel: false
+					}).then(() => uni.showModal({
+						editable: true,
+						...options
+					})).then(({ confirm, content }) => confirm ? content.replaceAll('\n', ' ') : null)
+				
+				return uni.showModal({
+					editable: true,
+					...options
+				}).then(({ confirm, content }) => confirm ? content.replaceAll('\n', ' ') : null)
+			},
 		}
 	}
 </script>
@@ -83,6 +59,7 @@
 	@import '@/uni_modules/uni-scss/index.scss';
 	/* #ifndef APP-NVUE */
 	@import '@/static/customicons.css';
+
 	// 设置整个项目的背景色
 	page {
 		background-color: #f5f5f5;
