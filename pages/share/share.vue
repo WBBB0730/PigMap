@@ -26,6 +26,7 @@
 </template>
 
 <script>
+	import { inputListName } from '/utils/input.js'
 	const app = getApp()
 	export default {
 		data() {
@@ -48,7 +49,7 @@
 			}
 		},
 		methods: {
-			/** 更新清单 */
+			/** 加载清单 */
 			async updateList() {
 				if (!this.listId)
 					return
@@ -80,21 +81,10 @@
 					await app.login()
 				const listId = this.listId
 				const openId = app.globalData.openId
+				if (!listId || !openId)
+					return
 				
-				let name = this.name
-				name = await app.getInput({
-					title: '保存清单',
-					content: name,
-					placeholderText: '请输入清单名称'
-				})
-				while (name !== null && (!name || name.length > 10)) {
-					let err = name ? '清单名称不能超过10个字符' : '清单名称不能为空'
-					name = await app.getInput({
-						title: '保存清单',
-						content: name,
-						placeholderText: '请输入清单名称'
-					}, err)
-				}
+				const name = await inputListName('保存清单', this.name)
 				if (name === null)
 					return
 					

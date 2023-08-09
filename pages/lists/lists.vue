@@ -2,7 +2,7 @@
 	<view>
 		<view v-if="lists.length === 0" class="empty">点击右下角 + 号创建清单</view>
 		<view class="lists">
-			<view v-for="(item, index) in lists" :key="index" class="list" hover-class="hover" hover-start-time="0" hover-stay-time="0" @tap="handleTapList(index)" @longpress="editing = true">
+			<view v-for="(item, index) in lists" :key="index" class="list" hover-class="hover" hover-start-time="0" hover-stay-time="0" @tap="handleTapList(index)" @longpress="editing = !editing">
 				<view class="left">
 					<text class="list-name" space="nbsp">{{ item.name }}</text>
 					<text class="total">共{{ item.total }}个地点</text>
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+	import { inputListName } from '/utils/input.js'
 	const app = getApp()
 	export default {
 		data() {
@@ -86,19 +87,7 @@
 				const names = this.lists.map(item => item.name)
 				for (let i = 2; names.includes(name); i++)
 					name = '我的清单' + i
-				name = await app.getInput({
-					title: '新建清单',
-					content: name,
-					placeholderText: '请输入清单名称'
-				})
-				while (name !== null && (!name || name.length > 10)) {
-					let err = name ? '清单名称不能超过10个字符' : '清单名称不能为空'
-					name = await app.getInput({
-						title: '新建清单',
-						content: name,
-						placeholderText: '请输入清单名称'
-					}, err)
-				} 
+				name = await inputListName('新建清单', name)
 				if (name === null)
 					return
 				
@@ -146,20 +135,7 @@
 					return
 				
 				const listId = this.lists[index]._id
-				let name = this.lists[index].name;
-				name = await app.getInput({
-					title: '修改清单名称',
-					content: name,
-					placeholderText: '请输入清单名称'
-				})
-				while (name !== null && (!name || name.length > 10)) {
-					let err = name ? '清单名称不能超过10个字符' : '清单名称不能为空'
-					name = await app.getInput({
-						title: '修改清单名称',
-						content: name,
-						placeholderText: '请输入清单名称'
-					}, err)
-				}
+				const name = await inputListName('修改清单名称', this.lists[index].name)
 				if (name === null)
 					return
 				
@@ -218,7 +194,7 @@
 		display: flex;
 		box-sizing: border-box;
 		height: 100vh;
-		padding-bottom: 20vh;
+		padding-bottom: 100rpx;
 		justify-content: center;
 		align-items: center;
 		color: $uni-secondary-color;

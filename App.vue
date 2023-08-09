@@ -31,25 +31,7 @@
 						title: '登录失败'
 					})
 				})
-			},
-
-			/** 获取弹窗输入 */
-			getInput(options, err) {
-				if (err)
-					return uni.showModal({
-						title: '提示',
-						content: err,
-						showCancel: false
-					}).then(() => uni.showModal({
-						editable: true,
-						...options
-					})).then(({ confirm, content }) => confirm ? content.replaceAll('\n', ' ') : null)
-				
-				return uni.showModal({
-					editable: true,
-					...options
-				}).then(({ confirm, content }) => confirm ? content.replaceAll('\n', ' ') : null)
-			},
+			}
 		}
 	}
 </script>
