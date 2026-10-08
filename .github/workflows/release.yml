@@ -82,6 +82,7 @@ jobs:
           VITE_UNICLOUD_CLIENT_SECRET: ${{ secrets.UNICLOUD_CLIENT_SECRET }}
 
       # appid 取自构建产物的 project.config.json（由 manifest.json 生成），只维护一处
+      # 说明以「-」开头时会被当成参数名而丢失，所以用「=」连写
       - name: Upload to WeChat
         run: |
           : "${MP_UPLOAD_KEY:?Missing MP_UPLOAD_KEY}"
@@ -95,7 +96,7 @@ jobs:
             --project-path dist/build/mp-weixin \
             --private-key-path "$key_path" \
             --upload-version "$VERSION" \
-            --upload-description "$NOTES" \
+            --upload-description="$NOTES" \
             --use-project-config \
             --robot 1
         env:
