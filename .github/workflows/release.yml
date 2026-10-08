@@ -1,0 +1,112 @@
+# tag 触发：构建 → 上传到微信（成为开发版）→ 发 GitHub Release
+# 提交审核与发布只能在微信公众平台手动操作
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      notes: ${{ steps.meta.outputs.notes }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      - name: Require tag commit on main
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+
+      # 含更新说明：CHANGELOG.md 里这一版那段，没写为空
+      - name: Resolve release metadata
+        id: meta
+        run: node scripts/release-meta.mjs "$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+
+  # 上传到微信即对外生效，所以必须等门禁通过
+  release:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      # 只读恢复 CI 在 main 名下存的缓存（key 与 ci.yml 一致）。tag 上的运行存下的缓存别的 tag 看不到，
+      # 所以这里不写：写了只白占配额
+      - name: Resolve pnpm store path
+        id: pnpm
+        run: echo "store=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore pnpm store
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.pnpm.outputs.store }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: |
+          : "${VITE_UNICLOUD_SPACE_ID:?Missing UNICLOUD_SPACE_ID}"
+          : "${VITE_UNICLOUD_CLIENT_SECRET:?Missing UNICLOUD_CLIENT_SECRET}"
+          pnpm build:mp-weixin
+        env:
+          VITE_UNICLOUD_SPACE_ID: ${{ secrets.UNICLOUD_SPACE_ID }}
+          VITE_UNICLOUD_CLIENT_SECRET: ${{ secrets.UNICLOUD_CLIENT_SECRET }}
+
+      # appid 取自构建产物的 project.config.json（由 manifest.json 生成），只维护一处
+      - name: Upload to WeChat
+        run: |
+          : "${MP_UPLOAD_KEY:?Missing MP_UPLOAD_KEY}"
+          key_path="$RUNNER_TEMP/private.key"
+          trap 'rm -f "$key_path"' EXIT
+          printf '%s\n' "$MP_UPLOAD_KEY" > "$key_path"
+          chmod 600 "$key_path"
+          appid="$(node -p "require('./dist/build/mp-weixin/project.config.json').appid")"
+          pnpm exec miniprogram-ci upload \
+            --appid "$appid" \
+            --project-path dist/build/mp-weixin \
+            --private-key-path "$key_path" \
+            --upload-version "$VERSION" \
+            --upload-description "$NOTES" \
+            --use-project-config \
+            --robot 1
+        env:
+          MP_UPLOAD_KEY: ${{ secrets.MP_UPLOAD_KEY }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          # 正文经环境变量传入，不直接拼进脚本
+          NOTES: ${{ needs.verify.outputs.notes }}
+
+      - name: Publish GitHub Release
+        run: gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --notes "$NOTES" --latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NOTES: ${{ needs.verify.outputs.notes }}

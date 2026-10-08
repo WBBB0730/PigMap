@@ -1,0 +1,50 @@
+# 校验能否构建，并为发版备好缓存：Release 跑在 tag 上，只能读到默认分支（main）名下的缓存，
+# 所以 pnpm store 由这里产出；Release 侧只读不写。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 每周一 03:00 UTC 空跑一次：GitHub 会删掉 7 天没被访问的缓存，而发版间隔常超过一周
+    - cron: '0 3 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      - name: Resolve pnpm store path
+        id: pnpm
+        run: echo "store=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      # 精确 key 未命中时按前缀取最近一份：lockfile 变了也能复用没变的包
+      - name: Cache pnpm store
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.pnpm.outputs.store }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build:mp-weixin
