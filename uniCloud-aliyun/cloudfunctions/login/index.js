@@ -7,8 +7,9 @@ exports.main = async (event, context) => {
 			contentType: 'json',
 			dataType: 'json',
 			data: {
-				appid: '*****',
-				secret: '*****',
+				// 在 uniCloud 控制台的云函数环境变量中配置
+				appid: process.env.WX_APPID,
+				secret: process.env.WX_APPSECRET,
 				js_code: code,
 				grant_type: 'authorization_code'
 			}
