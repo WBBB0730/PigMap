@@ -90,3 +90,19 @@ ps. 此项目是使用uni-app开发的微信小程序，使用uniCloud云函数�
 </div>
 <br>
 <br>
+
+## 开发
+
+1. 安装依赖：`pnpm install`
+2. 复制 `.env.example` 为 `.env.local`，填入 uniCloud 服务空间的 SpaceId 和 ClientSecret
+3. 运行 `pnpm dev:mp-weixin`，用微信开发者工具打开 `dist/dev/mp-weixin`
+
+云函数和数据库 Schema 用 HBuilderX 上传。`login` 云函数需要在 uniCloud 控制台配置环境变量 `WX_APPID`、`WX_APPSECRET`
+
+## 发版
+
+1. 在 `CHANGELOG.md` 写好这一版的更新说明并提交
+2. 运行 `pnpm release`，选择版本号
+3. GitHub Actions 自动构建并上传到微信，之后在微信公众平台提交审核、发布
+
+需要在 GitHub 配置的 Secrets：`MP_UPLOAD_KEY`（小程序代码上传密钥）、`UNICLOUD_SPACE_ID`、`UNICLOUD_CLIENT_SECRET`
