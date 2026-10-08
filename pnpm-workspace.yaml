@@ -1,0 +1,10 @@
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  # 原生部分随各平台的预编译包提供，安装脚本只做检查，用不上
+  '@swc/core': false
+  # 安装脚本只打印信息或检查版本，用不上
+  core-js: false
+  core-js-pure: false
+  less: false
+  protobufjs: false

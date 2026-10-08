@@ -1,2 +1,10 @@
-manifest.json
-unpackage/**
+node_modules
+dist
+unpackage
+.DS_Store
+
+# 本地环境变量（uniCloud 服务空间信息）
+.env.local
+
+# HBuilderX 配置云函数环境变量时生成的文件
+uniCloud-aliyun/cloudfunctions/*/.env

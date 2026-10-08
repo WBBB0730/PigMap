@@ -1,0 +1,48 @@
+<script>
+	import cloud from '@/utils/cloud.js'
+	export default {
+		onLaunch() {},
+		globalData: {
+			openId: ''
+		},
+		onShareAppMessage() {
+			return {
+				title: '猪猪地图',
+				path: '/pages/lists/lists',
+				imageUrl: '/static/icon.png'
+			}
+		},
+		methods: {
+			/** 登录 */
+			login() {
+				uni.showLoading()
+				return uni.login({ provider: 'weixin' }).then(({ code }) => {
+					if (!code)
+						return Promise.reject()
+					return cloud.callFunction({
+						name: 'login',
+						data: { code }
+					})
+				}).then((res) => {
+					this.globalData.openId = res.result.openId
+					uni.hideLoading()
+				}).catch(() => {
+					uni.showToast({
+						icon: 'error',
+						title: '登录失败'
+					})
+				})
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	/* #ifndef APP-NVUE */
+	// 设置整个项目的背景色
+	page {
+		background-color: #f5f5f5;
+	}
+
+	/* #endif */
+</style>
